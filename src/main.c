@@ -6,32 +6,29 @@
 
 
 /*
- * This Senior Capstone Project C file leverages 
- * High-Performance Computing techniques via the
- * Message-Passing Interface (MPI) to attempt to increase
- * and monitor CPU temperatures to maintain a specific reading.
+ * This Computer Science Senior Capstone Project C file leverages 
+ * high-performance computing (HPC) techniques via the Message-Passing 
+ * Interface (MPI) to attempt to increase and monitor CPU temperatures 
+ * to maintain a specific overall temperature of a node cluster.
+ *
+ * This software is being written for a small-scale Raspberry Pi node cluster 
+ * in a proof-of-concept format.
  * 
- * This software is being written for a small-scale Raspberry Pi
- * node cluster in a proof-of-concept format. The goal of this
- * project is to max-out the CPU abilities on each available core
- * (processs), simulating a fully-loaded data center node, and
- * later analyze this data to extrapolate the abilities of a
- * data center cluster to provide a baseline-level of heat output
- * which has little fluctuation. Percentage of acceptable 
- * fluctuation is yet-to-be-determined.
+ * Data collected will be visualized to extrapolate on the potential of using a 
+ * computing cluster, such as a data center, to provide a relatively-consistent 
+ * baseline-level of heat output for productive re-use, while hopefully not 
+ * significantly impacting the performance of the data center itself. Percentage of
+ * acceptable temperature fluctuation is yet-to-be-determined.
  * 
- * CPU temperature data will be recorded, and tests MAY be run
- * with an arbitrary maximum CPU temperature limit having been
- * be set on the Pi nodes in use to attempt to collect 
- * data on whether a consistent MAX temperature output 
- * from nodes is possible. This promotes the idea that
- * data centers could be relied-upon for a MINIMUM as well as a
- * MAXIMUM standard heat range, regardless of
- * requested processing power by outside network clients.
+ * CPUs will be maxed-out through a custom calculation function to keep CPUs loaded
+ * with jobs, and temperature data will be recorded after each calculation. A goal 
+ * is to set a temperature limit on the CPUs to pause calculations when temperatures 
+ * veer outside of the acceptable range. This would allow for a predictable temperature
+ * output range under maximum CPU load, regardless of requested processing power by outside
+ * network clients. This, in turn, would demonstrate practicality by way of a predictable 
+ * temperature output in the use of this concept as a real-world heating tool.
  * 
- * Data is to-be-visualized using the Ganglia open-source 
- * software package.
- * 
+ * Data will be visualized using the Ganglia open-source software package.
  */
 
 

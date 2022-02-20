@@ -98,7 +98,7 @@ char system_name[MPI_MAX_PROCESSOR_NAME]; //for MPI testing.
 int sys_name_char_length; //for MPI testing
 
 randNum1 = ((unsigned)(time(NULL))); //get unix timestamp for first random number.
-randNum2 = arc4random_uniform(100); //generate "random" number between 0 and 100.
+randNum2 = rand() % (100 + 1 - 1) + 1; //generate "random" number between 1 and 100. (.. % max_num + 1 - min_num) + min_num.
 double currentTemperature;
 
 

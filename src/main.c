@@ -119,8 +119,8 @@ MPI_Get_processor_name(system_name, &sys_name_char_length);
 
 
 // Test hello message
-//printf("\n\nhello from the computer named %s, core %d out of %d.\n\n", 
-//            system_name, core_number, number_of_cores);
+printf("\n\nhello from the computer named %s, core %d out of %d.\n\n", 
+            system_name, core_number, number_of_cores);
 
 
 

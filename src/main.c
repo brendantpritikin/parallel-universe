@@ -35,7 +35,7 @@
 /* Author: Brendan T. Pritikin */
 /* Thesis Advisor: Prof. John Rieffel */
 /* Institution: Union College, Schenectady, NY */
-/* Last Modified: February 20, 2022 */
+/* Last Modified: February 22, 2022 */
 
 
 /**
@@ -156,6 +156,16 @@ printf("\n\nhello from the computer named %s, core %d out of %d.\n\n",
 //#FIXME - ADD MPI collective-communication for increasing efficiency in calculations...
 //#FIXME - perhaps have an array of values from 1 to number_of_cores, and instruct each core to square the value in
 //#FIXME - its individual node index until 1,000 operations have occurred?
+
+// So, working idea now is to implement the following: the calculation we can do with MPI_Recv (and MPI_Send) is given a required calculation over a
+// certain distance/range (say, collectively we want a list of every square from 1-1,000,000,000). To accomplish this more efficiently than serially,
+// we can pass work split up in the format of n/p (tasks/processors available)
+// to every available process discovered at MPI_Init time. 
+//So, we take the number of tasks (1,000,000,000 - 1 tasks) and the number of processes P
+// (which, for any dual-core or higher system will be evenly-divisible), separate out the work by # of tasks, evenly,
+// compute, and return as the values are calculated. Given MPI_Recv and MPI_Send, processes will return as they have completed,
+// not in an orderly fashion, but that's OK. Goal is to compute everything REQUIRED as QUICKLY as possible, with the benefit
+// of parallel computing to accelerate an otherwise slow, slow task.
 
 
 number_of_cores_outside_MPI_declr = number_of_cores; //save non-MPI core count. Will be re-initialized with each MPI run. Minimal performance hit.

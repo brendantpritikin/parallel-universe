@@ -77,14 +77,14 @@ double get_CPU_Temp()
  * @param number_of_cores_total 
  *  
  */
-void save_all_node_temps(int number_of_cores_total, double* node_temp_record_array, int next_save_index_iteration)
+void save_all_node_temps(int number_of_cores_total, double** node_temp_record_array, int next_save_index_iteration)
 {
     for(int core = 0; core < (number_of_cores_total-3); core+=4)
     {
         double currentTemperature = get_CPU_Temp();
         printf("Node %d CPU temp: %f\n", (core/4), currentTemperature);
         node_temp_record_array[next_save_index_iteration][core] = currentTemperature;
-        printf("Temp saved.\n------\n");
+        printf("Temp saved.\n------\n"); 
     }
 }
 
@@ -121,7 +121,6 @@ const double TEMPERATURE_THRESHOLD = 70.0; //maximum °F setting for CPUs, i.e. 
 MPI_Init(&argc, &argv); //sets up MPI. Do not alter.
 
 int number_of_cores; //for MPI testing.
-int number_of_columns = number_of_cores; //for row-major iteration in data collection/retrieval.
 int core_number; //for MPI testing.
 char system_name[MPI_MAX_PROCESSOR_NAME]; //for MPI testing.
 int sys_name_char_length; //for MPI testing
@@ -237,7 +236,7 @@ for(int core = 0; core < number_of_cores-3; core+=4)
     {
         printf("SUCCESS. TEMPERATURE THRESHOLD REACHED. Waiting for CPUs to cool\n");
         printf("just below threshold before continuing calcuations to maintain a consistent average temperature.");
-        printf("CPU %d temp is %d and limit is set at %d.", core, node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
+        printf("CPU %d temp is %f and limit is set at %f.", core, node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
     }
 } 
 

@@ -12,7 +12,8 @@
  * to maintain a specific overall temperature of a node cluster.
  *
  * This software is being written for a small-scale Raspberry Pi node cluster 
- * in a proof-of-concept format.
+ * in a proof-of-concept format, with the knowledge that each node has a quad-core
+ * CPU.
  * 
  * Data collected will be visualized to extrapolate on the potential of using a 
  * computing cluster, such as a data center, to provide a relatively-consistent 
@@ -76,14 +77,14 @@ double get_CPU_Temp()
  * @param number_of_cores_total 
  *  
  */
-void save_all_node_temps(int number_of_cores_total, double** node_temp_record_array, int next_save_index)
+void save_all_node_temps(int number_of_cores_total, double* node_temp_record_array, int next_save_index_iteration)
 {
     for(int core = 0; core < (number_of_cores_total-3); core+=4)
     {
         double currentTemperature = get_CPU_Temp();
         printf("Node %d CPU temp: %f\n", (core/4), currentTemperature);
-        node_temp_record_array[core][next_save_index] = currentTemperature;
-        printf("Temp saved.------\n");
+        node_temp_record_array[next_save_index_iteration][core] = currentTemperature;
+        printf("Temp saved.\n------\n");
     }
 }
 
@@ -96,7 +97,7 @@ void save_all_node_temps(int number_of_cores_total, double** node_temp_record_ar
  */
 double* temperature_storage_array(int num_cores_total, int number_of_temp_recordings)
 {
-    double *temp_array = (double *) malloc((num_cores_total/4) * number_of_temp_recordings * sizeof(int)); //holds each node's temps in a 2D array.
+    double *temp_array = (double *) malloc(number_of_temp_recordings * (num_cores_total/4) * sizeof(int)); //holds each node's temps in a 2D array.
     return temp_array; // this should return a pointer to the beginning of the array.
 }
 
@@ -120,6 +121,7 @@ const double TEMPERATURE_THRESHOLD = 70.0; //maximum °F setting for CPUs, i.e. 
 MPI_Init(&argc, &argv); //sets up MPI. Do not alter.
 
 int number_of_cores; //for MPI testing.
+int number_of_columns = number_of_cores; //for row-major iteration in data collection/retrieval.
 int core_number; //for MPI testing.
 char system_name[MPI_MAX_PROCESSOR_NAME]; //for MPI testing.
 int sys_name_char_length; //for MPI testing
@@ -229,9 +231,13 @@ if(current_recording_iteration < num_of_temp_recordings)
 
 for(int core = 0; core < number_of_cores-3; core+=4)
 {
-    if(node_temp_record[core][current_recording_iteration] > TEMPERATURE_THRESHOLD)
+    // [core][current_recording_iteration] old array-iterating code.
+    //row-major format - i = current iteration/row; ncols = CPU # (assuming quad-core cpu); j = column/cpu temp.
+    while(node_temp_record[current_recording_iteration * (number_of_cores/4) + core]  > TEMPERATURE_THRESHOLD)
     {
-        printf("oh no! Too hot to handle!"); // pause the program for a few seconds. #FIXME need to set this up.
+        printf("SUCCESS. TEMPERATURE THRESHOLD REACHED. Waiting for CPUs to cool\n");
+        printf("just below threshold before continuing calcuations to maintain a consistent average temperature.");
+        printf("CPU %d temp is %d and limit is set at %d.", core, node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
     }
 } 
 

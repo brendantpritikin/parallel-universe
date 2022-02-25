@@ -30,13 +30,14 @@
  * temperature output in the use of this concept as a real-world heating tool.
  * 
  * Data will be visualized using the Ganglia open-source software package.
+ * 
  */
 
 
 /* Author: Brendan T. Pritikin */
 /* Thesis Advisor: Prof. John Rieffel */
 /* Institution: Union College, Schenectady, NY */
-/* Last Modified: February 22, 2022 */
+/* Last Modified: February 24, 2022 */
 
 
 /**
@@ -61,9 +62,9 @@ double square(double randNum1, double randNum2)
  */
 double get_CPU_Temp()
 {
-    FILE *temperatureRecord; //open Temp file from Pi.
-    double currentTemperature; //core temperature data.
-    temperatureRecord = fopen("/sys/class/thermal/thermal_zone0/temp", "r"); //read CPU temp. data from Pi.
+    FILE *temperatureRecord; // open Temp file from Pi.
+    double currentTemperature; // core temperature data.
+    temperatureRecord = fopen("/sys/class/thermal/thermal_zone0/temp", "r"); // read CPU temp. data from Pi.
 
     fscanf(temperatureRecord, "%lf", &currentTemperature);
     currentTemperature = (((currentTemperature / 1000) * 9) / 5); // convert from mili-degrees to Fahrenheit.
@@ -94,11 +95,11 @@ void save_all_node_temps(int number_of_cores_total, double** node_temp_record_ar
  * @brief create an array ranging from the starting to the ending value passed-in (inclusive).
  * @return int* array full of values from start-to-finish.
  */
-int* starting_array(int starting_value, int ending_value)
+int* filled_value_array(int starting_value, int ending_value)
 {
-    int *int_array[ending_value - starting_value];
+    int *int_array = (int *) malloc(starting_value * ending_value * sizeof(int)); // holds all ints to be loaded in, start-to-finish.
 
-    for(int current_index = starting_value; starting_value <= ending_value; current_index++)
+    for(int current_index = starting_value; current_index <= ending_value; current_index++)
     {
         int_array[current_index] = current_index;
     }
@@ -122,13 +123,13 @@ double* temperature_storage_array(int num_cores_total, int number_of_temp_record
 /**
  * @brief stores result of MPI squaring operations. Filled with resultant squares squaring_range_start - squaring_range_end.
  * 
- * @param squaring_range_start first number to square (main-defined).
- * @param squaring_range_end last number to square (main-defined).
- * @return int* 
+ * @param range_start first number to square (main-defined).
+ * @param range_end last number to square (main-defined).
+ * @return int* array from range_start to range_end
  */
-int* resultant_data_storage_array(int squaring_range_start, int squaring_range_end)
+int* resultant_data_storage_array(int range_start, int range_end)
 {
-    int *squaring_resultant_array = (int *) malloc((squaring_range_end - squaring_range_start) * sizeof(int)); //1-D array for holding squared value resultants.
+    int *squaring_resultant_array = (int *) malloc((range_end - range_start) * sizeof(int)); // 1-D array for holding squared value resultants.
     return squaring_resultant_array; // this should return a pointer to the beginning of the array.
 }
 
@@ -137,33 +138,34 @@ int* resultant_data_storage_array(int squaring_range_start, int squaring_range_e
 int main(int argc, char** argv){
 
 
-double randNum1; //for squaring fcn.
-double randNum2; //for squaring fcn.
+double randNum1; // for squaring fcn.
+double randNum2; // for squaring fcn.
 // double squareResult; //stores squared value to run-up processor core temps via arbitrary work.
-int introMessageDisplayed = 0; //allows display of informational message upon mpirun.
-int num_of_temp_recordings = 1000; //number of temperature records to store for each node.
-int current_recording_iteration = 0; //holds current iteration count of temp recording.
+int introMessageDisplayed = 0; // allows display of informational message upon mpirun.
+int num_of_temp_recordings = 1000; // number of temperature records to store for each node.
+int current_recording_iteration = 0; // holds current iteration count of temp recording.
 int number_of_cores_outside_MPI_declr = 0;
 double* node_temp_record = temperature_storage_array(number_of_cores_outside_MPI_declr, num_of_temp_recordings);
-const double TEMPERATURE_THRESHOLD = 70.0; //maximum °F setting for CPUs, i.e. temperature limit.
-int squaring_range_start = 0; //
-int squaring_range_end = num_of_temp_recordings; //enough room to hold the number of recordings planned.
+const double TEMPERATURE_THRESHOLD = 70.0; // maximum °F setting for CPUs, i.e. temperature limit.
+int num_range_start = 0; //
+int MPI_next_index_to_square = num_range_start; // stores value set above for MPI-specific use (just to keep things separate).
+int num_range_end = num_of_temp_recordings; // enough room to hold the number of recordings planned.
 // SQUARING RANGE START - SQUARING RANGE END MUST == N/P (tasks/processes). 
-int* squaring_fcn_resultant_data_storage = resultant_data_storage_array(squaring_range_start, squaring_range_end); //holds all resulting squares calculated across nodes.
-
+int* resultant_data_storage = resultant_data_storage_array(num_range_start, num_range_end); //holds all resulting squares calculated across nodes.
+int* values_array_filled = filled_value_array(num_range_start, num_range_end);
 
 
 
 // initialize MPI
-MPI_Init(&argc, &argv); //sets up MPI. Do not alter.
+MPI_Init(&argc, &argv); // sets up MPI. Do not alter.
 
-int number_of_cores; //for MPI testing.
-int core_number; //for MPI testing.
-char system_name[MPI_MAX_PROCESSOR_NAME]; //for MPI testing.
-int sys_name_char_length; //for MPI testing
+int number_of_cores; // for MPI testing.
+int core_number; // for MPI testing.
+char system_name[MPI_MAX_PROCESSOR_NAME]; // for MPI testing.
+int sys_name_char_length; // for MPI testing
 
-randNum1 = ((unsigned)(time(NULL))); //get unix timestamp for first random number.
-randNum2 = rand() % (100 + 1 - 1) + 1; //generate "random" number between 1 and 100. (.. % max_num + 1 - min_num) + min_num.
+randNum1 = ((unsigned)(time(NULL))); // get unix timestamp for first random number.
+randNum2 = rand() % (100 + 1 - 1) + 1; // generate "random" number between 1 and 100. (.. % max_num + 1 - min_num) + min_num.
 double currentTemperature;
 
 
@@ -178,8 +180,8 @@ double currentTemperature;
 // 3. Name of processors.
 // 4. Current temperature of processors (raspberry pi-specific).
 
-MPI_Comm_size(MPI_COMM_WORLD, &number_of_cores); //get number of processes.
-MPI_Comm_rank(MPI_COMM_WORLD, &core_number); //get rank of each processor (processor #)
+MPI_Comm_size(MPI_COMM_WORLD, &number_of_cores); // get number of processes.
+MPI_Comm_rank(MPI_COMM_WORLD, &core_number); // get rank of each processor (processor #)
 MPI_Get_processor_name(system_name, &sys_name_char_length);
 
 
@@ -232,12 +234,25 @@ printf("\n------------------------------------------\n");
 
 
 /**
- * @brief send task from all non-0 nodes to node 0.
+ * @brief MPI_Send task FROM all non-zero nodes TO node 0.
  * 
  */
 if(core_number == 0)
 {
-    fprint("0 is this core.. placeholder for MPI_Send.");
+    MPI_Send(&values_array_filled, 1, MPI_INT, 0, 0, MPI_COMM_WORLD); // MPI_Send-to-core-0-operation.
+}
+
+/**
+ * @brief MPI_Receive tasks from all non-zero nodes to node 0 (assuming quad-core).
+ * 
+ */
+for(int core = 4; core < (number_of_cores/4); core+=4)
+{
+    int squared_value;
+    MPI_Recv(&squared_value, 1, MPI_INT, core, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    //add to resultant data storage array. 
+    resultant_data_storage[MPI_next_index_to_square] = squared_value;
+    MPI_next_index_to_square += 1; // move counter to next index.
 }
 
 
@@ -322,7 +337,8 @@ if(core_number == 3)
 */
 
 free(node_temp_record);
-free(squaring_fcn_resultant_data_storage);
+free(values_array_filled);
+free(resultant_data_storage);
 
 MPI_Finalize(); //Finalize MPI environment.
 return 0;

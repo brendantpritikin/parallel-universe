@@ -88,6 +88,24 @@ void save_all_node_temps(int number_of_cores_total, double** node_temp_record_ar
     }
 }
 
+
+
+/**
+ * @brief create an array ranging from the starting to the ending value passed-in (inclusive).
+ * @return int* array full of values from start-to-finish.
+ */
+int* starting_array(int starting_value, int ending_value)
+{
+    int *int_array[ending_value - starting_value];
+
+    for(int current_index = starting_value; starting_value <= ending_value; current_index++)
+    {
+        int_array[current_index] = current_index;
+    }
+    return int_array;
+}
+
+
 /**
  * @brief create an array to store node CPU temp recordings.
  * 
@@ -99,6 +117,19 @@ double* temperature_storage_array(int num_cores_total, int number_of_temp_record
 {
     double *temp_array = (double *) malloc(number_of_temp_recordings * (num_cores_total/4) * sizeof(int)); //holds each node's temps in a 2D array.
     return temp_array; // this should return a pointer to the beginning of the array.
+}
+
+/**
+ * @brief stores result of MPI squaring operations. Filled with resultant squares squaring_range_start - squaring_range_end.
+ * 
+ * @param squaring_range_start first number to square (main-defined).
+ * @param squaring_range_end last number to square (main-defined).
+ * @return int* 
+ */
+int* resultant_data_storage_array(int squaring_range_start, int squaring_range_end)
+{
+    int *squaring_resultant_array = (int *) malloc((squaring_range_end - squaring_range_start) * sizeof(int)); //1-D array for holding squared value resultants.
+    return squaring_resultant_array; // this should return a pointer to the beginning of the array.
 }
 
 
@@ -115,6 +146,12 @@ int current_recording_iteration = 0; //holds current iteration count of temp rec
 int number_of_cores_outside_MPI_declr = 0;
 double* node_temp_record = temperature_storage_array(number_of_cores_outside_MPI_declr, num_of_temp_recordings);
 const double TEMPERATURE_THRESHOLD = 70.0; //maximum °F setting for CPUs, i.e. temperature limit.
+int squaring_range_start = 0; //
+int squaring_range_end = num_of_temp_recordings; //enough room to hold the number of recordings planned.
+// SQUARING RANGE START - SQUARING RANGE END MUST == N/P (tasks/processes). 
+int* squaring_fcn_resultant_data_storage = resultant_data_storage_array(squaring_range_start, squaring_range_end); //holds all resulting squares calculated across nodes.
+
+
 
 
 // initialize MPI
@@ -157,9 +194,10 @@ printf("\n\nhello from the computer named %s, core %d out of %d.\n\n",
 //#FIXME - ADD MPI collective-communication for increasing efficiency in calculations...
 //#FIXME - perhaps have an array of values from 1 to number_of_cores, and instruct each core to square the value in
 //#FIXME - its individual node index until 1,000 operations have occurred?
+    //YES - ARRAY IS CALLED RESULTANT_DATA_STORAGE_ARRAY. IT IS 1-D.    
 
 // So, working idea now is to implement the following: the calculation we can do with MPI_Recv (and MPI_Send) is given a required calculation over a
-// certain distance/range (say, collectively we want a list of every square from 1-1,000,000,000). To accomplish this more efficiently than serially,
+// certain distance/range (say, collectively we want a list of every square from 1-1,000,000,000 [inclusive]). To accomplish this more efficiently than serially,
 // we can pass work split up in the format of n/p (tasks/processors available)
 // to every available process discovered at MPI_Init time. 
 //So, we take the number of tasks (1,000,000,000 - 1 tasks) and the number of processes P
@@ -187,6 +225,22 @@ if(introMessageDisplayed == 0 && core_number == 0){
 
 
 printf("\n------------------------------------------\n");
+
+
+//add MPI task distribution here.
+//calculations will be performed via collective-communication.
+
+
+/**
+ * @brief send task from all non-0 nodes to node 0.
+ * 
+ */
+if(core_number == 0)
+{
+    fprint("0 is this core.. placeholder for MPI_Send.");
+}
+
+
 
 //#FIXME - OLD CODE FOR TEMPERATURE-PULLING. WILL DELETE AFTER TESTING NEW CODE.
 
@@ -268,6 +322,7 @@ if(core_number == 3)
 */
 
 free(node_temp_record);
+free(squaring_fcn_resultant_data_storage);
 
 MPI_Finalize(); //Finalize MPI environment.
 return 0;

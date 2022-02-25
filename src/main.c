@@ -144,9 +144,8 @@ double randNum2; // for squaring fcn.
 int introMessageDisplayed = 0; // allows display of informational message upon mpirun.
 int num_of_temp_recordings = 1000; // number of temperature records to store for each node.
 int current_recording_iteration = 0; // holds current iteration count of temp recording.
-int number_of_cores_outside_MPI_declr = 0;
 
-double* node_temp_record = temperature_storage_array(number_of_cores_outside_MPI_declr, num_of_temp_recordings);
+double* node_temp_record;
 const double TEMPERATURE_THRESHOLD = 70.0; // maximum °F setting for CPUs, i.e. temperature limit.
 int num_range_start = 0; //
 int MPI_next_index_to_square = num_range_start; // stores value set above for MPI-specific use (just to keep things separate).
@@ -210,9 +209,6 @@ printf("\n\nhello from the computer named %s, core %d out of %d.\n\n",
 // of parallel computing to accelerate an otherwise slow, slow task.
 
 
-number_of_cores_outside_MPI_declr = number_of_cores; //save non-MPI core count. Will be re-initialized with each MPI run. Minimal performance hit.
-
-
 if(introMessageDisplayed == 0 && core_number == 0){
     printf("-----------------------------------------\n");
     printf("PROGRAM INFORMATION: \n\nLoaded: \n1. math.h\n2. stdio.h\n3. stdlib.h\n4. time.h\n5. mpi.h\n\n");
@@ -229,6 +225,8 @@ if(introMessageDisplayed == 0 && core_number == 0){
 
 printf("\n------------------------------------------\n");
 
+// create storage array for node temperature data.
+node_temp_record = temperature_storage_array(number_of_cores, num_of_temp_recordings);
 
 //add MPI task distribution here.
 //calculations will be performed via collective-communication.

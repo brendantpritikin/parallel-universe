@@ -37,7 +37,7 @@
 /* Author: Brendan T. Pritikin */
 /* Thesis Advisor: Prof. John Rieffel */
 /* Institution: Union College, Schenectady, NY */
-/* Last Modified: February 24, 2022 */
+/* Last Modified: February 25, 2022 */
 
 
 /**
@@ -116,7 +116,7 @@ int* filled_value_array(int starting_value, int ending_value)
  */
 double* temperature_storage_array(int num_cores_total, int number_of_temp_recordings)
 {
-    double *temp_array = (double *) malloc(number_of_temp_recordings * (num_cores_total/4) * sizeof(int)); //holds each node's temps in a 2D array.
+    double *temp_array = (double *) malloc(number_of_temp_recordings * (num_cores_total/4) * sizeof(double)); //holds each node's temps in a 2D array.
     return temp_array; // this should return a pointer to the beginning of the array.
 }
 
@@ -145,6 +145,7 @@ int introMessageDisplayed = 0; // allows display of informational message upon m
 int num_of_temp_recordings = 1000; // number of temperature records to store for each node.
 int current_recording_iteration = 0; // holds current iteration count of temp recording.
 int number_of_cores_outside_MPI_declr = 0;
+
 double* node_temp_record = temperature_storage_array(number_of_cores_outside_MPI_declr, num_of_temp_recordings);
 const double TEMPERATURE_THRESHOLD = 70.0; // maximum °F setting for CPUs, i.e. temperature limit.
 int num_range_start = 0; //

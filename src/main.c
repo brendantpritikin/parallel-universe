@@ -234,7 +234,7 @@ int i;
 for (i = core_number; i < values_array_size; i+=number_of_cores)
 {
     resultant_data_storage[i] = square(values_array_filled[i]); //square VAF and store in RDS.
-    printf("I'm core %d!\n", core_number);
+    //printf("I'm core %d!\n", core_number); works.
 }
 
 printf("squared value by process %d is %d.\n", core_number, resultant_data_storage[i]);

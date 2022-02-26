@@ -94,9 +94,9 @@ void save_all_node_temps(int number_of_cores_total, double** node_temp_record_ar
  * @brief create an array ranging from the starting to the ending value passed-in (inclusive).
  * @return int* array full of values from start-to-finish.
  */
-int* filled_value_array(int starting_value, int ending_value)
+int * filled_value_array(int starting_value, int ending_value)
 {
-    int *int_array = (int *) malloc(starting_value * ending_value * sizeof(int)); // holds all ints to be loaded in, start-to-finish.
+    static int int_array[4000];
 
     for(int current_index = starting_value; current_index <= ending_value; current_index++)
     {
@@ -113,9 +113,9 @@ int* filled_value_array(int starting_value, int ending_value)
  * @param number_of_temp_recordings total recordings to capture for program run.
  * @return double* array to store data in.
  */
-double* temperature_storage_array(int num_cores_total, int number_of_temp_recordings)
+double * temperature_storage_array(int num_cores_total, int number_of_temp_recordings)
 {
-    double *temp_array = (double *) malloc(number_of_temp_recordings * (num_cores_total/4) * sizeof(double)); //holds each node's temps in a 2D array.
+    static double temp_array[4000];
     return temp_array; // this should return a pointer to the beginning of the array.
 }
 
@@ -126,9 +126,9 @@ double* temperature_storage_array(int num_cores_total, int number_of_temp_record
  * @param range_end last number to square (main-defined).
  * @return int* array from range_start to range_end
  */
-int* resultant_data_storage_array(int range_start, int range_end)
+int * resultant_data_storage_array(int range_start, int range_end)
 {
-    int *squaring_resultant_array = (int *) malloc((range_end - range_start) * sizeof(int)); // 1-D array for holding squared value resultants.
+    static int squaring_resultant_array[4000];
     return squaring_resultant_array; // this should return a pointer to the beginning of the array.
 }
 
@@ -154,6 +154,14 @@ int* resultant_data_storage = resultant_data_storage_array(num_range_start, num_
 int* values_array_filled = filled_value_array(num_range_start, num_range_end);
 int values_array_size = (num_range_end - num_range_start);
 int* final_data_array = resultant_data_storage_array(num_range_start, num_range_end); // holds received values. from MPI_Recv.
+
+
+//RESULTANT DATA STORAGE ARRAY MALLOC: (int *) malloc((range_end - range_start) * sizeof(int)); // 1-D array for holding squared value resultants.
+//FILLED VALUE ARRAY MALLOC: (int *) malloc(starting_value * ending_value * sizeof(int)); // holds all ints to be loaded in, start-to-finish.
+//TEMPERATURE STORAGE ARRAY (just for the heck of it as it has a malloc): (double *) malloc(number_of_temp_recordings * (num_cores_total/4) * sizeof(double)); //holds each node's temps in a 2D array.
+//SETTING ALL TO A SIZE OF 4000.
+
+
 
 // initialize MPI
 MPI_Init(&argc, &argv); // sets up MPI. Do not alter.

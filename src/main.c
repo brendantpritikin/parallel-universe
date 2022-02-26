@@ -150,10 +150,10 @@ int num_range_start = 0; //
 //int MPI_next_index_to_square = num_range_start; // stores value set above for MPI-specific use (just to keep things separate).
 int num_range_end = num_of_temp_recordings; // enough room to hold the number of recordings planned.
 // SQUARING RANGE START - SQUARING RANGE END MUST == N/P (tasks/processes). 
-int* resultant_data_storage = resultant_data_storage_array(num_range_start, num_range_end); //holds all resulting squares calculated across nodes.
-int* values_array_filled = filled_value_array(num_range_start, num_range_end);
+//int* resultant_data_storage = resultant_data_storage_array(num_range_start, num_range_end); //holds all resulting squares calculated across nodes.
+//int* values_array_filled = filled_value_array(num_range_start, num_range_end);
 int values_array_size = (num_range_end - num_range_start);
-int* final_data_array = resultant_data_storage_array(num_range_start, num_range_end); // holds received values. from MPI_Recv.
+//int* final_data_array = resultant_data_storage_array(num_range_start, num_range_end); // holds received values. from MPI_Recv.
 
 // initialize MPI
 MPI_Init(&argc, &argv); // sets up MPI. Do not alter.
@@ -226,7 +226,7 @@ if(introMessageDisplayed == 0 && core_number == 0){
 printf("\n------------------------------------------\n");
 
 // create storage array for node temperature data.
-node_temp_record = temperature_storage_array(number_of_cores, num_of_temp_recordings);
+//node_temp_record = temperature_storage_array(number_of_cores, num_of_temp_recordings);
 
 
 
@@ -236,10 +236,11 @@ int i;
 
 for (i = core_number; i < values_array_size; i+=number_of_cores)
 {
-    resultant_data_storage[i] = square(values_array_filled[i]); //square VAF and store in RDS.
+//    resultant_data_storage[i] = square(values_array_filled[i]); //square VAF and store in RDS.
+    printf("I'm core %d!\n", core_number);
 }
 
-printf("squared value by process %d is %d.\n", core_number, resultant_data_storage[i]);
+//printf("squared value by process %d is %d.\n", core_number, resultant_data_storage[i]);
 
 
 
@@ -250,7 +251,8 @@ printf("squared value by process %d is %d.\n", core_number, resultant_data_stora
  */
 for(int core = 4; core < (number_of_cores/4); core+=4)
 {
-    MPI_Send(&resultant_data_storage, 1, MPI_INT, 0, 0, MPI_COMM_WORLD); // MPI_Send-to-core-0-operation.
+//    MPI_Send(&resultant_data_storage, 1, MPI_INT, 0, 0, MPI_COMM_WORLD); // MPI_Send-to-core-0-operation.
+    printf("Number two! I'm core %d!\n", core_number);
 }
 
 /**
@@ -261,7 +263,8 @@ for(int core = 4; core < (number_of_cores/4); core+=4)
  */
 if(core_number == 0)
 {
-    MPI_Recv(&final_data_array, 1, MPI_INT, core_number, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+//    MPI_Recv(&final_data_array, 1, MPI_INT, core_number, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    printf("Finally, I'm core %d!\n", core_number);
 }
 
 
@@ -357,9 +360,9 @@ if(core_number == 0)
 }
 
 free(node_temp_record);
-free(values_array_filled);
-free(resultant_data_storage);
-free(final_data_array);
+//free(values_array_filled);
+//free(resultant_data_storage);
+//free(final_data_array);
 
 MPI_Finalize(); //Finalize MPI environment.
 

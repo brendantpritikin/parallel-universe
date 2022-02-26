@@ -354,8 +354,8 @@ if(core_number == 3)
 
 if(core_number == 0)
 {
-    printf("\n\nFilled value array looks like this: %d.", *values_array_filled); // numbers before squaring.
-    printf("\n\nresulting data looks like this: %d", *final_data_array); //squared number results.
+//    printf("\n\nFilled value array looks like this: %d.", *values_array_filled); // numbers before squaring.
+//    printf("\n\nresulting data looks like this: %d", *final_data_array); //squared number results.
     printf("\n\nHere is the array of collected temperature data: %f.\n", *node_temp_record); //node temp data.
 }
 

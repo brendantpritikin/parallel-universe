@@ -370,7 +370,6 @@ if(core_number == 0)
 //free(final_data_array); //not necessary unless using malloc().
 
 MPI_Finalize(); //Finalize MPI environment.
-exit(0);
 
 return 0;
 

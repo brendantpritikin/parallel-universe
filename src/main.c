@@ -96,13 +96,13 @@ void save_all_node_temps(int number_of_cores_total, double** node_temp_record_ar
  */
 int * filled_value_array(int starting_value, int ending_value)
 {
-    static int *int_array[4000];
+    static int int_array[4000];
 
     for(int current_index = starting_value; current_index <= ending_value; current_index++)
     {
-        int_array[current_index] = &current_index;
+        int_array[current_index] = current_index;
     }
-    return *int_array;
+    return int_array;
 }
 
 
@@ -115,8 +115,8 @@ int * filled_value_array(int starting_value, int ending_value)
  */
 double * temperature_storage_array(int num_cores_total, int number_of_temp_recordings)
 {
-    static double *temp_array[4000];
-    return *temp_array; // this should return a pointer to the beginning of the array.
+    static double temp_array[4000];
+    return temp_array; // this should return a pointer to the beginning of the array.
 }
 
 /**
@@ -128,8 +128,8 @@ double * temperature_storage_array(int num_cores_total, int number_of_temp_recor
  */
 int * resultant_data_storage_array(int range_start, int range_end)
 {
-    static int *squaring_resultant_array[4000];
-    return *squaring_resultant_array; // this should return a pointer to the beginning of the array.
+    static int squaring_resultant_array[4000];
+    return squaring_resultant_array; // this should return a pointer to the beginning of the array.
 }
 
 
@@ -370,9 +370,8 @@ free(resultant_data_storage);
 free(final_data_array);
 
 MPI_Finalize(); //Finalize MPI environment.
-exit(0);
 
 
-//return 0;
+return 0;
 
 }

@@ -364,13 +364,13 @@ if(core_number == 0)
     printf("\n\nHere is the array of collected temperature data: %f.\n", *node_temp_record); //node temp data.
 }
 
-free(node_temp_record);
-free(values_array_filled);
-free(resultant_data_storage);
-free(final_data_array);
+//free(node_temp_record); //not necessary unless using malloc().
+//free(values_array_filled); //not necessary unless using malloc().
+//free(resultant_data_storage); //not necessary unless using malloc().
+//free(final_data_array); //not necessary unless using malloc().
 
 MPI_Finalize(); //Finalize MPI environment.
-
+exit(0);
 
 return 0;
 

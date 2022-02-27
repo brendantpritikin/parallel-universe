@@ -152,7 +152,7 @@ int num_range_end = num_of_temp_recordings; // enough room to hold the number of
 // SQUARING RANGE START - SQUARING RANGE END MUST == N/P (tasks/processes). 
 int* resultant_data_storage = resultant_data_storage_array(num_range_start, num_range_end); //holds all resulting squares calculated across nodes.
 int* values_array_filled = filled_value_array(num_range_start, num_range_end);
-int values_array_size = (num_range_end - num_range_start);
+int values_array_size = 4000; //(num_range_end - num_range_start);
 int* final_data_array = resultant_data_storage_array(num_range_start, num_range_end); // holds received values. from MPI_Recv.
 
 
@@ -239,7 +239,7 @@ node_temp_record = temperature_storage_array(number_of_cores, num_of_temp_record
 
 int i;
 
-for (i = core_number; i < values_array_size; i+=number_of_cores)
+for (i = num_range_start; i < values_array_size; i++)
 {
     resultant_data_storage[i] = square(values_array_filled[i]); //square VAF and store in RDS.
     //printf("I'm core %d!\n", core_number); works.

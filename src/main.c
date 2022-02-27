@@ -98,7 +98,7 @@ int * filled_value_array(int starting_value, int ending_value)
 {
     static int int_array[4000];
 
-    for(int current_index = starting_value; current_index <= ending_value; current_index++)
+    for(int current_index = starting_value; current_index < 4000; current_index++)
     {
         int_array[current_index] = current_index;
     }

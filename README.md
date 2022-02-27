@@ -24,4 +24,19 @@ by way of a predictable temperature output in the use of this concept as a real-
 
 Data will be visualized using the Ganglia open-source software package.
 
+INSTRUCTIONS:
+
+to compile and run, MPI 3.1.1 is recommended (software built with this version of MPI).
+
+This is built to be run on a Raspberry Pi cluster, and was tested using one from the CSinParallel program. Therefore,
+as the CSinParallel system had a hostfile on it to recognize all available nodes and processor cores for running, the instructions below assume you are in posession of the hostfile from this device. If not, the file will, by default, run on a single node with "mpirun main".
+
+In Terminal (macOS/Ubuntu):
+
+1. cd ...parallel-universe/src/
+2. make
+3. mpirun -hostfile ~/hostfile -np [number of cores] ./main
+
+2/27/22.
+Code written by Brendan T. Pritikin. All Rights Reserved.
 ----------------------------------

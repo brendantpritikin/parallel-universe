@@ -189,7 +189,7 @@ if(introMessageDisplayed == 0 && core_number == 0){
     printf("The process will continue until a CPU temperature threshold has been set,\n");
     printf("at which time the program will PAUSE until the temperature has fallen below\n");
     printf("the threshold. Then, squaring of numbers will continue.\n");
-    printf("Temp threshold set to: %f\n", TEMPERATURE_THRESHOLD);
+    printf("Temp threshold set to: %3.2f°F\n", TEMPERATURE_THRESHOLD);
     printf("-----------------------------------------\n\n\n\n\n");
 
     introMessageDisplayed = 1;
@@ -261,43 +261,6 @@ if(core_number == 0)
     }
 }
 
-
-
-
-
-
-
-
-
-/**
-
-
-if(core_number == 0) //node 0,core1 i.e. first core in first CPU.
-{
-    printf("OLD hard-coding FOR TESTING = node 0 CPU temp: \n\n");
-    currentTemperature = get_CPU_Temp();
-    printf("%f", currentTemperature);
-    printf("\n------------------------------------------\n");
-}
-
-if(core_number == 4) //node 1
-{
-    printf("OLD hard-coding FOR TESTING = node 1 CPU temp: \n\n");
-    currentTemperature = get_CPU_Temp();
-    printf("%f", currentTemperature);
-    printf("\n------------------------------------------\n");
-}
-
-if(core_number == 8) // node 2
-{
-    printf("OLD hard-coding FOR TESTING = node 2 CPU temp: \n\n");
-    currentTemperature = get_CPU_Temp();
-    printf("%f", currentTemperature);
-    printf("\n------------------------------------------\n");
-}
-
-*/
-
 /**
  * @brief save currrent CPU temperatures from all connected nodes.
  * 
@@ -307,10 +270,17 @@ if(current_recording_iteration < num_of_temp_recordings)
     save_all_node_temps(number_of_cores, &node_temp_record, current_recording_iteration);
 }
 
+/**
+ * @brief print current CPU temperature. Print overtemp temperature
+ *  repeatedly (pause calculations by staying in this loop) until temp drops
+ *  below prescribed level as set in TEMPERATURE_THRESHOLD.
+ * 
+ */
 for(int core = 0; core < number_of_cores-3; core+=4)
 {
-    // [core][current_recording_iteration] old array-iterating code.
     //row-major format - i = current iteration/row; ncols = CPU # (assuming quad-core cpu); j = column/cpu temp.
+    printf("CPU %d temp is currently: %f°F\n", core, node_temp_record[current_recording_iteration * (number_of_cores/4) + core]);
+
     while(node_temp_record[current_recording_iteration * (number_of_cores/4) + core]  > TEMPERATURE_THRESHOLD)
     {
         printf("SUCCESS. TEMPERATURE THRESHOLD REACHED. Waiting for CPUs to cool\n");
@@ -318,33 +288,6 @@ for(int core = 0; core < number_of_cores-3; core+=4)
         printf("CPU %d temp is %f and limit is set at %f.", core, node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
     }
 } 
-
-
-//#FIXME: OLD CODE call/response from cores. WILL DELETE AFTER TESTING NEW CODE.
-
-/**
-
-if(core_number == 0)
-{
-    printf("test message from core 0.");
-}
-
-if(core_number == 1)
-{
-    printf("test message from core 1.");
-}
-
-if(core_number == 2)
-{
-    printf("test message from core 2.");
-}
-
-if(core_number == 3)
-{
-    printf("test message from core 3.");
-}
-
-*/
 
 if(core_number == 0)
 {

@@ -240,7 +240,7 @@ node_temp_record = temperature_storage_array(number_of_cores, num_of_temp_record
 
 if(core_number == 0)
 {
-    printf("\nFILLED VALUE ARRAY TO BE SQUARED IS: \n %f\n", values_array_filled);
+    printf("\nFILLED VALUE ARRAY TO BE SQUARED IS: \n %d\n", *values_array_filled);
 }
 
 int i;

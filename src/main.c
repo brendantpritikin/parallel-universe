@@ -134,7 +134,7 @@ int * resultant_data_storage_array(int range_start, int range_end)
 
 
 
-int main(int argc, char** argv){
+int main(int argc, char* argv[]){
 
 //NOT IN USE (WILL DELETE)
 //double randNum1; // for squaring fcn.

@@ -37,7 +37,7 @@
 /* Author: Brendan T. Pritikin */
 /* Thesis Advisor: Prof. John Rieffel */
 /* Institution: Union College, Schenectady, NY */
-/* Last Modified: February 25, 2022 */
+/* Last Modified: February 27, 2022 */
 
 
 /**
@@ -100,7 +100,9 @@ int * filled_value_array(int starting_value, int ending_value)
 
     for(int current_index = starting_value; current_index < 4000; current_index++)
     {
+        //printf("CURRENT INDEX TO STORE: %d", current_index);
         int_array[current_index] = current_index;
+        //printf("INDEX STORED WAS: %d", int_array[current_index]);
     }
     return int_array;
 }
@@ -136,11 +138,6 @@ int * resultant_data_storage_array(int range_start, int range_end)
 
 int main(int argc, char* argv[]){
 
-//NOT IN USE (WILL DELETE)
-//double randNum1; // for squaring fcn.
-//double randNum2; // for squaring fcn.
-// double squareResult; //stores squared value to run-up processor core temps via arbitrary work.
-
 int number_of_cores; // for MPI testing.
 int core_number; // for MPI testing.
 
@@ -149,7 +146,7 @@ int num_of_temp_recordings = 1000; // number of temperature records to store for
 int current_recording_iteration = 0; // holds current iteration count of temp recording.
 
 double* node_temp_record;
-const double TEMPERATURE_THRESHOLD = 70.0; // maximum °F setting for CPUs, i.e. temperature limit.
+const double TEMPERATURE_THRESHOLD = 65.0; // maximum °F setting for CPUs, i.e. temperature limit.
 int num_range_start = 0; //
 //int MPI_next_index_to_square = num_range_start; // stores value set above for MPI-specific use (just to keep things separate).
 int num_range_end = num_of_temp_recordings; // enough room to hold the number of recordings planned.
@@ -173,17 +170,6 @@ MPI_Init(&argc, &argv); // sets up MPI. Do not alter.
 char system_name[MPI_MAX_PROCESSOR_NAME]; // for MPI testing.
 int sys_name_char_length; // for MPI testing
 
-//UNUSED. WILL DELETE. NOT SQUARING RANDOM NUMBERS, SQUARING NUMBERS CHRONOLOGICALLY FROM 1-1000, IN THIS EXAMPLE.
-//randNum1 = ((unsigned)(time(NULL))); // get unix timestamp for first random number.
-//randNum2 = rand() % (100 + 1 - 1) + 1; // generate "random" number between 1 and 100. (.. % max_num + 1 - min_num) + min_num.
-//double currentTemperature;
-
-
-//BEGIN MPI TESTING.
-
-//recall, everything in this program will be run once by each
-// processor, including all print statements.
-
 //Get basic data about system
 // 1. Number of processes (cores/processors available).
 // 2. Rank of processors.
@@ -195,30 +181,6 @@ MPI_Comm_rank(MPI_COMM_WORLD, &core_number); // get rank of each processor (proc
 MPI_Get_processor_name(system_name, &sys_name_char_length);
 
 
-// Test hello message
-printf("\n\nhello from the computer named %s, core %d out of %d.\n\n", 
-            system_name, core_number, number_of_cores);
-
-
-
-//END MPI TESTING.
-
-//#FIXME - ADD MPI collective-communication for increasing efficiency in calculations...
-//#FIXME - perhaps have an array of values from 1 to number_of_cores, and instruct each core to square the value in
-//#FIXME - its individual node index until 1,000 operations have occurred?
-    //YES - ARRAY IS CALLED RESULTANT_DATA_STORAGE_ARRAY. IT IS 1-D.    
-
-// So, working idea now is to implement the following: the calculation we can do with MPI_Recv (and MPI_Send) is given a required calculation over a
-// certain distance/range (say, collectively we want a list of every square from 1-1,000,000,000 [inclusive]). To accomplish this more efficiently than serially,
-// we can pass work split up in the format of n/p (tasks/processors available)
-// to every available process discovered at MPI_Init time. 
-//So, we take the number of tasks (1,000,000,000 - 1 tasks) and the number of processes P
-// (which, for any dual-core or higher system will be evenly-divisible), separate out the work by # of tasks, evenly,
-// compute, and return as the values are calculated. Given MPI_Recv and MPI_Send, processes will return as they have completed,
-// not in an orderly fashion, but that's OK. Goal is to compute everything REQUIRED as QUICKLY as possible, with the benefit
-// of parallel computing to accelerate an otherwise slow, slow task.
-
-
 if(introMessageDisplayed == 0 && core_number == 0){
     printf("-----------------------------------------\n");
     printf("PROGRAM INFORMATION: \n\nLoaded: \n1. math.h\n2. stdio.h\n3. stdlib.h\n4. time.h\n5. mpi.h\n\n");
@@ -227,6 +189,7 @@ if(introMessageDisplayed == 0 && core_number == 0){
     printf("The process will continue until a CPU temperature threshold has been set,\n");
     printf("at which time the program will PAUSE until the temperature has fallen below\n");
     printf("the threshold. Then, squaring of numbers will continue.\n");
+    printf("Temp threshold set to: %f\n", TEMPERATURE_THRESHOLD);
     printf("-----------------------------------------\n\n\n\n\n");
 
     introMessageDisplayed = 1;
@@ -238,21 +201,20 @@ printf("\n------------------------------------------\n");
 // create storage array for node temperature data.
 node_temp_record = temperature_storage_array(number_of_cores, num_of_temp_recordings);
 
-if(core_number == 0)
-{
-    printf("\nFILLED VALUE ARRAY TO BE SQUARED IS: \n %d\n", *values_array_filled);
-}
 
-int i;
 
-for (i = num_range_start; i < values_array_size; i++)
-{
-    resultant_data_storage[i] = square(values_array_filled[i]); //square VAF and store in RDS.
-    //printf("I'm core %d!\n", core_number); works.
-}
-
-printf("squared value by process %d is %d.\n", core_number, resultant_data_storage[i]);
-
+//WORKING SQUARING FUCTION CODE.
+for(int current_index = 0; current_index < values_array_size; current_index++)
+    {
+        int temp;
+        int temp2;
+        temp = values_array_filled[current_index];
+        temp2 = square(temp);
+//        printf("\nCURRENT VALUE IS: %d", temp);
+//        printf("SQUARED VALUE IS: %d\n", temp2);
+        resultant_data_storage[current_index] = temp2; //store squred value in new array.
+//        printf("\nSquared array value. Stored it. \nInitial value: %d, squared value: %d\n\n", temp, resultant_data_storage[current_index]);
+    }
 
 
 /**
@@ -260,10 +222,9 @@ printf("squared value by process %d is %d.\n", core_number, resultant_data_stora
  * for calculations to take place.
  * 
  */
-for(int core = 4; core < (number_of_cores/4); core+=4)
+if(core_number != 0)
 {
-    MPI_Send(resultant_data_storage, 1, MPI_INT, 0, 0, MPI_COMM_WORLD); // MPI_Send-to-core-0-operation.
-    printf("Number two! I'm core %d!\n", core_number);
+    MPI_Send(resultant_data_storage, 4000, MPI_INT, 0, 0, MPI_COMM_WORLD); // MPI_Send-to-core-0-operation.
 }
 
 /**
@@ -274,8 +235,30 @@ for(int core = 4; core < (number_of_cores/4); core+=4)
  */
 if(core_number == 0)
 {
-    MPI_Recv(final_data_array, 1, MPI_INT, core_number, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    printf("Finally, I'm core %d!\n", core_number);
+    int localArray[4000];
+
+    /**
+     * @brief receive data into a local array.
+     * 
+     */
+    for(int core_recv_from = 1; core_recv_from < number_of_cores; core_recv_from++)
+    {
+        MPI_Recv(localArray, 4000, MPI_INT, core_recv_from, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+
+    /**
+     * @brief move data to final array for output.
+     * 
+     */
+    for(int i = 0; i < 4000; i++)
+    {
+        final_data_array[i] = localArray[i];
+    }
+
+    for(int array_index = 0; array_index < 4000; array_index++)
+    {
+        printf("-------Collective calculations finished. The perfect square of %d is: %d\n", values_array_filled[array_index], final_data_array[array_index]);
+    }
 }
 
 

@@ -96,9 +96,9 @@ void save_all_node_temps(int number_of_cores_total, double** node_temp_record_ar
  */
 int * filled_value_array(int starting_value, int ending_value)
 {
-    static int int_array[4000];
+    static int int_array[1000000];
 
-    for(int current_index = starting_value; current_index < 4000; current_index++)
+    for(int current_index = starting_value; current_index < 1000000; current_index++)
     {
         //printf("CURRENT INDEX TO STORE: %d", current_index);
         int_array[current_index] = current_index;
@@ -117,7 +117,7 @@ int * filled_value_array(int starting_value, int ending_value)
  */
 double * temperature_storage_array(int num_cores_total, int number_of_temp_recordings)
 {
-    static double temp_array[4000];
+    static double temp_array[1000000];
     return temp_array; // this should return a pointer to the beginning of the array.
 }
 
@@ -130,7 +130,7 @@ double * temperature_storage_array(int num_cores_total, int number_of_temp_recor
  */
 int * resultant_data_storage_array(int range_start, int range_end)
 {
-    static int squaring_resultant_array[4000];
+    static int squaring_resultant_array[1000000];
     return squaring_resultant_array; // this should return a pointer to the beginning of the array.
 }
 
@@ -153,14 +153,14 @@ int num_range_end = num_of_temp_recordings; // enough room to hold the number of
 // SQUARING RANGE START - SQUARING RANGE END MUST == N/P (tasks/processes). 
 int* resultant_data_storage = resultant_data_storage_array(num_range_start, num_range_end); //holds all resulting squares calculated across nodes.
 int* values_array_filled = filled_value_array(num_range_start, num_range_end);
-int values_array_size = 4000; //(num_range_end - num_range_start);
+int values_array_size = 1000000; //(num_range_end - num_range_start);
 int* final_data_array = resultant_data_storage_array(num_range_start, num_range_end); // holds received values. from MPI_Recv.
 
 
 //RESULTANT DATA STORAGE ARRAY MALLOC: (int *) malloc((range_end - range_start) * sizeof(int)); // 1-D array for holding squared value resultants.
 //FILLED VALUE ARRAY MALLOC: (int *) malloc(starting_value * ending_value * sizeof(int)); // holds all ints to be loaded in, start-to-finish.
 //TEMPERATURE STORAGE ARRAY (just for the heck of it as it has a malloc): (double *) malloc(number_of_temp_recordings * (num_cores_total/4) * sizeof(double)); //holds each node's temps in a 2D array.
-//SETTING ALL TO A SIZE OF 4000.
+//SETTING ALL TO A SIZE OF 1000000.
 
 
 
@@ -224,7 +224,7 @@ for(int current_index = 0; current_index < values_array_size; current_index++)
  */
 if(core_number != 0)
 {
-    MPI_Send(resultant_data_storage, 4000, MPI_INT, 0, 0, MPI_COMM_WORLD); // MPI_Send-to-core-0-operation.
+    MPI_Send(resultant_data_storage, 1000000, MPI_INT, 0, 0, MPI_COMM_WORLD); // MPI_Send-to-core-0-operation.
 }
 
 /**
@@ -235,7 +235,7 @@ if(core_number != 0)
  */
 if(core_number == 0)
 {
-    int localArray[4000];
+    int localArray[1000000];
 
     /**
      * @brief receive data into a local array.
@@ -243,19 +243,19 @@ if(core_number == 0)
      */
     for(int core_recv_from = 1; core_recv_from < number_of_cores; core_recv_from++)
     {
-        MPI_Recv(localArray, 4000, MPI_INT, core_recv_from, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(localArray, 1000000, MPI_INT, core_recv_from, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
     /**
      * @brief move data to final array for output.
      * 
      */
-    for(int i = 0; i < 4000; i++)
+    for(int i = 0; i < 1000000; i++)
     {
         final_data_array[i] = localArray[i];
     }
 
-    for(int array_index = 0; array_index < 4000; array_index++)
+    for(int array_index = 0; array_index < 1000000; array_index++)
     {
         printf("-------Collective calculations finished. The perfect square of %d is: %d\n", values_array_filled[array_index], final_data_array[array_index]);
     }

@@ -140,6 +140,10 @@ int main(int argc, char* argv[]){
 //double randNum1; // for squaring fcn.
 //double randNum2; // for squaring fcn.
 // double squareResult; //stores squared value to run-up processor core temps via arbitrary work.
+
+int number_of_cores; // for MPI testing.
+int core_number; // for MPI testing.
+
 int introMessageDisplayed = 0; // allows display of informational message upon mpirun.
 int num_of_temp_recordings = 1000; // number of temperature records to store for each node.
 int current_recording_iteration = 0; // holds current iteration count of temp recording.
@@ -166,8 +170,6 @@ int* final_data_array = resultant_data_storage_array(num_range_start, num_range_
 // initialize MPI
 MPI_Init(&argc, &argv); // sets up MPI. Do not alter.
 
-int number_of_cores; // for MPI testing.
-int core_number; // for MPI testing.
 char system_name[MPI_MAX_PROCESSOR_NAME]; // for MPI testing.
 int sys_name_char_length; // for MPI testing
 
@@ -236,6 +238,10 @@ printf("\n------------------------------------------\n");
 // create storage array for node temperature data.
 node_temp_record = temperature_storage_array(number_of_cores, num_of_temp_recordings);
 
+if(core_number == 0)
+{
+    printf("\nFILLED VALUE ARRAY TO BE SQUARED IS: \n %f\n", values_array_filled);
+}
 
 int i;
 

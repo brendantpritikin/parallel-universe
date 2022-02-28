@@ -96,9 +96,9 @@ void save_all_node_temps(int number_of_cores_total, double** node_temp_record_ar
  */
 int * filled_value_array(int starting_value, int ending_value)
 {
-    static int int_array[1000000];
+    static int int_array[1200000];
 
-    for(int current_index = starting_value; current_index < 1000000; current_index++)
+    for(int current_index = starting_value; current_index < 1200000; current_index++)
     {
         //printf("CURRENT INDEX TO STORE: %d", current_index);
         int_array[current_index] = current_index;
@@ -117,7 +117,7 @@ int * filled_value_array(int starting_value, int ending_value)
  */
 double * temperature_storage_array(int num_cores_total, int number_of_temp_recordings)
 {
-    static double temp_array[1000000];
+    static double temp_array[1200000];
     return temp_array; // this should return a pointer to the beginning of the array.
 }
 
@@ -130,7 +130,7 @@ double * temperature_storage_array(int num_cores_total, int number_of_temp_recor
  */
 int * resultant_data_storage_array(int range_start, int range_end)
 {
-    static int squaring_resultant_array[1000000];
+    static int squaring_resultant_array[1200000];
     return squaring_resultant_array; // this should return a pointer to the beginning of the array.
 }
 
@@ -144,7 +144,8 @@ int number_of_cores; // for MPI testing.
 int core_number; // for MPI testing.
 
 int introMessageDisplayed = 0; // allows display of informational message upon mpirun.
-int num_of_temp_recordings = 1000; // number of temperature records to store for each node.
+int num_of_calculations = 1200000; // n/p == int
+int num_of_temp_recordings = num_of_calculations; // number of temperature records to store for each node.
 int current_recording_iteration = 0; // holds current iteration count of temp recording.
 
 double* node_temp_record;
@@ -155,7 +156,6 @@ int num_range_end = num_of_temp_recordings; // enough room to hold the number of
 // SQUARING RANGE START - SQUARING RANGE END MUST == N/P (tasks/processes). 
 int* resultant_data_storage = resultant_data_storage_array(num_range_start, num_range_end); //holds all resulting squares calculated across nodes.
 int* values_array_filled = filled_value_array(num_range_start, num_range_end);
-int values_array_size = 1000000; //(num_range_end - num_range_start);
 int* final_data_array = resultant_data_storage_array(num_range_start, num_range_end); // holds received values. from MPI_Recv.
 
 
@@ -202,7 +202,7 @@ node_temp_record = temperature_storage_array(number_of_cores, num_of_temp_record
 
 
 //WORKING SQUARING FUCTION CODE.
-for(int current_index = 0; current_index < values_array_size; current_index++)
+for(int current_index = 0; current_index < num_of_calculations; current_index++)
     {
         int temp;
         int temp2;
@@ -222,7 +222,7 @@ for(int current_index = 0; current_index < values_array_size; current_index++)
  */
 if(core_number != 0)
 {
-    MPI_Send(resultant_data_storage, 1000000, MPI_INT, 0, 0, MPI_COMM_WORLD); // MPI_Send-to-core-0-operation.
+    MPI_Send(resultant_data_storage, num_of_calculations, MPI_INT, 0, 0, MPI_COMM_WORLD); // MPI_Send-to-core-0-operation.
 }
 
 /**
@@ -233,7 +233,7 @@ if(core_number != 0)
  */
 if(core_number == 0)
 {
-    int localArray[1000000];
+    int localArray[1200000];
 
     /**
      * @brief receive data into a local array.
@@ -241,19 +241,19 @@ if(core_number == 0)
      */
     for(int core_recv_from = 1; core_recv_from < number_of_cores; core_recv_from++)
     {
-        MPI_Recv(localArray, 1000000, MPI_INT, core_recv_from, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(localArray, num_of_calculations, MPI_INT, core_recv_from, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
     /**
      * @brief move data to final array for output.
      * 
      */
-    for(int i = 0; i < 1000000; i++)
+    for(int i = 0; i < num_of_calculations; i++)
     {
         final_data_array[i] = localArray[i];
     }
 
-    for(int array_index = 0; array_index < 1000000; array_index++)
+    for(int array_index = 0; array_index < 1200000; array_index++)
     {
         printf("-------Collective calculations finished. The perfect square of %d is: %d\n", values_array_filled[array_index], final_data_array[array_index]);
     }

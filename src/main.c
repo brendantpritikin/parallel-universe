@@ -135,6 +135,8 @@ int * resultant_data_storage_array(int range_start, int range_end)
 }
 
 
+struct timespec remaining, requested = {1, 1000}; //support sleep operation. Defined as one second and 1000ns.
+
 
 int main(int argc, char* argv[]){
 
@@ -157,10 +159,6 @@ int values_array_size = 1000000; //(num_range_end - num_range_start);
 int* final_data_array = resultant_data_storage_array(num_range_start, num_range_end); // holds received values. from MPI_Recv.
 
 
-//RESULTANT DATA STORAGE ARRAY MALLOC: (int *) malloc((range_end - range_start) * sizeof(int)); // 1-D array for holding squared value resultants.
-//FILLED VALUE ARRAY MALLOC: (int *) malloc(starting_value * ending_value * sizeof(int)); // holds all ints to be loaded in, start-to-finish.
-//TEMPERATURE STORAGE ARRAY (just for the heck of it as it has a malloc): (double *) malloc(number_of_temp_recordings * (num_cores_total/4) * sizeof(double)); //holds each node's temps in a 2D array.
-//SETTING ALL TO A SIZE OF 1000000.
 
 
 
@@ -283,9 +281,17 @@ for(int core = 0; core < number_of_cores-3; core+=4)
 
     while(node_temp_record[current_recording_iteration * (number_of_cores/4) + core]  > TEMPERATURE_THRESHOLD)
     {
-        printf("SUCCESS. TEMPERATURE THRESHOLD REACHED. Waiting for CPUs to cool\n");
-        printf("just below threshold before continuing calcuations to maintain a consistent average temperature.");
-        printf("CPU %d temp is %f and limit is set at %f.", core, node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
+        printf("SUCCESS. TEMPERATURE THRESHOLD REACHED. Waiting 250ms for CPU %d to cool.\n", core);
+        printf("CPU temp is %f and limit is set at %f.", node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
+        int sleeping = nanosleep(&requested, &remaining); //requesting sleep between amounts defined above. sleep/pause process 2.5 ms before checking temperature again.
+
+        if (sleeping == 0)
+        {
+            printf("Sleep successful. Continuing...");
+        } else 
+        {
+            printf("Sleep unsuccessful.");
+        }
     }
 } 
 

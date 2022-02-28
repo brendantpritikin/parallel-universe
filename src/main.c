@@ -277,12 +277,13 @@ if(current_recording_iteration < num_of_temp_recordings)
 for(int core = 0; core < number_of_cores-3; core+=4)
 {
     //row-major format - i = current iteration/row; ncols = CPU # (assuming quad-core cpu); j = column/cpu temp.
-    printf("CPU %d temp is currently: %f°F\n", core, node_temp_record[current_recording_iteration * (number_of_cores/4) + core]);
+    int cpu_number = (core/4);
+    printf("CPU %d temp is currently: %f°F\n", cpu_number, node_temp_record[current_recording_iteration * (number_of_cores/4) + core]);
 
     while(node_temp_record[current_recording_iteration * (number_of_cores/4) + core]  > TEMPERATURE_THRESHOLD)
     {
         printf("SUCCESS. TEMPERATURE THRESHOLD REACHED. Waiting 250ms for CPU %d to cool.\n", core);
-        printf("CPU temp is %f and limit is set at %f.", node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
+        printf("CPU %d temp is %f and limit is set at %f.", cpu_number, node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
         int sleeping = nanosleep(&requested, &remaining); //requesting sleep between amounts defined above. sleep/pause process 2.5 ms before checking temperature again.
 
         if (sleeping == 0)

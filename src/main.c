@@ -273,16 +273,16 @@ for(int core = 0; core < number_of_cores-3; core+=4)
 
     while(node_temp_record[current_recording_iteration * (number_of_cores/4) + core]  > TEMPERATURE_THRESHOLD)
     {
-        printf("SUCCESS. TEMPERATURE THRESHOLD REACHED. Waiting 1,000 ns for CPU %d to cool.\n", core);
-        printf("CPU %d temp is %f and limit is set at %f.", cpu_number, node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
+        printf("\nSUCCESS. TEMPERATURE THRESHOLD REACHED. Waiting 1,000 ns for CPU %d to cool.", core);
+        printf("\nCPU %d temp is %f and limit is set at %f.", cpu_number, node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
         int sleeping = nanosleep(&requested, &remaining); //requesting sleep... i.e. sleep requested # ns before re-checking temp.
 
         if (sleeping == 0)
         {
-            printf("Sleep successful. Continuing...");
+            printf("\nSleep successful. Continuing...");
         } else 
         {
-            printf("Sleep unsuccessful.");
+            printf("\nSleep unsuccessful.");
         }
     }
 } 

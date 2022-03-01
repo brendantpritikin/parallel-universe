@@ -216,29 +216,21 @@ for(int current_index = 0; current_index < num_of_calculations; current_index++)
 
 
 /**
- * @brief MPI_Send task/values_array_fllled values FROM all non-zero nodes TO node 0
- * for calculations to take place.
- * 
+ * @brief MPI_Send task values from all non-zero nodes to node 0
+ * to pass result of calculations.
  */
 if(core_number != 0)
 {
-    MPI_Send(resultant_data_storage, num_of_calculations, MPI_INT, 0, 0, MPI_COMM_WORLD); // MPI_Send-to-core-0-operation.
+    MPI_Send(resultant_data_storage, num_of_calculations, MPI_INT, 0, 0, MPI_COMM_WORLD);
 }
 
 /**
- * @brief MPI_Receive tasks from all non-zero nodes to node 0 (assuming quad-core).
- *          Goal: square next value in values_array_filled and store result in 
- *                  resultant_data_storage.
- * 
+ * @brief MPI_Receive tasks from node 0 to all other nodes for calculation.
  */
 if(core_number == 0)
 {
     int localArray[1200000];
 
-    /**
-     * @brief receive data into a local array.
-     * 
-     */
     for(int core_recv_from = 1; core_recv_from < number_of_cores; core_recv_from++)
     {
         MPI_Recv(localArray, num_of_calculations, MPI_INT, core_recv_from, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -269,10 +261,9 @@ if(current_recording_iteration < num_of_temp_recordings)
 }
 
 /**
- * @brief print current CPU temperature. Print overtemp temperature
- *  repeatedly (pause calculations by staying in this loop) until temp drops
- *  below prescribed level as set in TEMPERATURE_THRESHOLD.
- * 
+ * @brief print current CPU temperature. Delay calculations
+ *  (and print if overtemp repeatedly) with current temperature 
+ *  until CPU temp drops below level set in TEMPERATURE_THRESHOLD.
  */
 for(int core = 0; core < number_of_cores-3; core+=4)
 {
@@ -282,9 +273,9 @@ for(int core = 0; core < number_of_cores-3; core+=4)
 
     while(node_temp_record[current_recording_iteration * (number_of_cores/4) + core]  > TEMPERATURE_THRESHOLD)
     {
-        printf("SUCCESS. TEMPERATURE THRESHOLD REACHED. Waiting 250ms for CPU %d to cool.\n", core);
+        printf("SUCCESS. TEMPERATURE THRESHOLD REACHED. Waiting 1,000 ns for CPU %d to cool.\n", core);
         printf("CPU %d temp is %f and limit is set at %f.", cpu_number, node_temp_record[current_recording_iteration * (number_of_cores/4) + core], TEMPERATURE_THRESHOLD);
-        int sleeping = nanosleep(&requested, &remaining); //requesting sleep between amounts defined above. sleep/pause process 2.5 ms before checking temperature again.
+        int sleeping = nanosleep(&requested, &remaining); //requesting sleep... i.e. sleep requested # ns before re-checking temp.
 
         if (sleeping == 0)
         {

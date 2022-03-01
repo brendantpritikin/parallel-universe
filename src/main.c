@@ -247,7 +247,7 @@ if(core_number == 0)
 
     for(int array_index = 0; array_index < 1200000; array_index++)
     {
-        printf("-------Collective calculations finished. The perfect square of %d is: %d\n", values_array_filled[array_index], final_data_array[array_index]);
+        printf("\n----Collective calculations finished. The perfect square of %d is: %d", values_array_filled[array_index], final_data_array[array_index]);
     }
 }
 
@@ -269,7 +269,7 @@ for(int core = 0; core < number_of_cores-3; core+=4)
 {
     //row-major format - i = current iteration/row; ncols = CPU # (assuming quad-core cpu); j = column/cpu temp.
     int cpu_number = (core/4);
-    printf("CPU %d temp is currently: %f°F\n", cpu_number, node_temp_record[current_recording_iteration * (number_of_cores/4) + core]);
+    printf("\nCPU %d temp is currently: %f°F", cpu_number, node_temp_record[current_recording_iteration * (number_of_cores/4) + core]);
 
     while(node_temp_record[current_recording_iteration * (number_of_cores/4) + core]  > TEMPERATURE_THRESHOLD)
     {
